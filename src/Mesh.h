@@ -3,7 +3,7 @@
 #include "MeshVertex.h"
 #include <GLAD/glad.h>
 #include "GameObject.h"
-class Mesh : GameObject{
+class Mesh : public GameObject{
 public:
 	Mesh(std::vector<MeshVertex> vertices, std::vector<unsigned int> indices) : GameObject() {
 		this->vertices = vertices;

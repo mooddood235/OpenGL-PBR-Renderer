@@ -4,22 +4,35 @@
 
 class GameObject {
 public:
-	GameObject() {
-		modelMatrix = glm::mat4(1);
-	}
-
 	void Translate(glm::vec3 translation) {
-		modelMatrix = glm::translate(modelMatrix, translation);
+		translationMatrix = glm::translate(translationMatrix, translation);
 	}
 	void Scale(glm::vec3 scale) {
-		modelMatrix = glm::scale(modelMatrix, scale);
+		scaleMatrix = glm::scale(scaleMatrix, scale);
 	}
-	void Rotate(glm::vec3 rotation) {
-		modelMatrix = glm::rotate(modelMatrix, rotation.x, glm::vec3(1, 0, 0));
-		modelMatrix = glm::rotate(modelMatrix, rotation.y, glm::vec3(0, 1, 0));
-		modelMatrix = glm::rotate(modelMatrix, rotation.z, glm::vec3(0, 0, 1));
+	void RotateLocal(float angleInDegrees, glm::vec3 axis){
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(angleInDegrees), axis);
+	}
+	void RotateGlobal(float angleInDegrees, glm::vec3 axis) {
+		glm::vec3 localAxis = glm::mat3(glm::inverse(rotationMatrix)) * axis;
+		RotateLocal(angleInDegrees, localAxis);
+	}
+	glm::vec3 GetXAxis() {
+		return glm::mat3(rotationMatrix) * glm::vec3(1, 0, 0);
+	}
+	glm::vec3 GetYAxis() {
+		return glm::mat3(rotationMatrix) * glm::vec3(0, 1, 0);
+	}
+	glm::vec3 GetZAxis() {
+		return glm::mat3(rotationMatrix) * glm::vec3(0, 0, 1);
+	}
+ 	glm::mat4 GetModelMatrix() {
+		return translationMatrix * rotationMatrix * scaleMatrix;
 	}
 	
-private:
-	glm::mat4 modelMatrix;
+	
+protected:
+	glm::mat4 translationMatrix = glm::mat4(1);
+	glm::mat4 scaleMatrix = glm::mat4(1);
+	glm::mat4 rotationMatrix = glm::mat4(1);
 };

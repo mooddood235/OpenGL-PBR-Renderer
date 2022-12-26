@@ -7,11 +7,9 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 
-class Model : GameObject{
+class Model : public GameObject{
 public:
 	Model(const char* modelPath) : GameObject() {
-		meshes = std::vector<Mesh>();
-		
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
 
@@ -27,7 +25,7 @@ public:
 		}
 	}
 private:
-	std::vector<Mesh> meshes;
+	std::vector<Mesh> meshes = std::vector<Mesh>();
 
 	void AddMeshes(aiNode *node, const aiScene* scene) {
 		for (unsigned int i = 0; i < node->mNumMeshes; i++) {

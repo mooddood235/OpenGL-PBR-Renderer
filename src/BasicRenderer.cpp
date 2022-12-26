@@ -6,6 +6,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Model.h"
+#include "Camera.h"
+#include "WindowSettings.h"
 
 GLFWwindow* InitGLFW();
 void InitGLAD();
@@ -16,31 +18,32 @@ int main()
     GLFWwindow* window = InitGLFW();
     InitGLAD();
     
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     Shader shader = Shader("src/Shaders/Default.vert", "src/Shaders/Default.frag");
     Model backpack = Model("Models/Backpack/backpack.obj");
-   
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    Camera camera = Camera();
 
-    glm::mat4 viewMatrix = glm::mat4(1.0f);
-    viewMatrix = glm::translate(viewMatrix, glm::vec3(0.0f, 0.0f, -8.0f));
+    camera.Translate(glm::vec3(0, 0, 8));
 
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-    shader.SetMat4("modelMatrix", modelMatrix);
-    shader.SetMat4("viewMatrix", viewMatrix);
-    shader.SetMat4("projectionMatrix", projectionMatrix);
-
+    float lastTime = 0;
+    
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glfwPollEvents();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
+ 
+        float currentTime = glfwGetTime();
+        camera.ProcessInput(window, currentTime - lastTime);
+        lastTime = currentTime;
+        
+        shader.SetMat4("modelMatrix", backpack.GetModelMatrix());
+        shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
+        shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
 
         shader.Use();
         backpack.Draw();
@@ -65,6 +68,8 @@ GLFWwindow* InitGLFW() {
         exit(-1);
     }
     glfwMakeContextCurrent(window);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     return window;
 }
