@@ -38,16 +38,13 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
  
         float currentTime = glfwGetTime();
-        camera.ProcessInput(window, currentTime - lastTime);
+        float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
-        
-        shader.SetMat4("modelMatrix", backpack.GetModelMatrix());
-        shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
-        shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
 
-        shader.Use();
-        backpack.Draw();
-        Shader::Unuse();
+        camera.ProcessInput(window, deltaTime);
+
+        backpack.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
+        backpack.Draw(shader, camera);
     }
 
     glfwTerminate();

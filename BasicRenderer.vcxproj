@@ -150,17 +150,20 @@
   <ItemGroup>
     <ClCompile Include="src\BasicRenderer.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Includes\glad.h" />
     <ClInclude Include="Includes\glfw3.h" />
     <ClInclude Include="Includes\khrplatform.h" />
+    <ClInclude Include="Includes\stb_image\stb_image.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\MeshVertex.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Triangle.h" />
     <ClInclude Include="src\WindowSettings.h" />
   </ItemGroup>

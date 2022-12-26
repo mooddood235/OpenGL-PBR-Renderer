@@ -30,9 +30,13 @@ public:
 	void Use() {
 		glUseProgram(shaderProgram);
 	}
-	void SetMat4(const char* name, glm::mat4 value) {
-		int location = glGetUniformLocation(shaderProgram, name);
+	void SetMat4(std::string name, glm::mat4 value) {
+		int location = glGetUniformLocation(shaderProgram, name.c_str());
 		glProgramUniformMatrix4fv(shaderProgram, location, 1, GL_FALSE, glm::value_ptr(value));
+	}
+	void SetInt(std::string name, int value) {
+		int location = glGetUniformLocation(shaderProgram, name.c_str());
+		glProgramUniform1i(shaderProgram, location, value);
 	}
 
 	static void Unuse() {
