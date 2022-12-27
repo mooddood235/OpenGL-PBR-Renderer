@@ -38,33 +38,11 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
-	void Draw(Shader shader, Camera camera) {
-		shader.SetMat4("modelMatrix", GetModelMatrix());
-		shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
-		shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
-
-		BindTexturesAndSetTextureUniforms(shader);
-
-		shader.Use();
-		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-		Shader::Unuse();
-	}
-	void ModelDraw(Shader shader) {
-		BindTexturesAndSetTextureUniforms(shader);
-
+	void Draw() {
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-private:
-	unsigned int vao, vbo, ebo;
-
-	std::vector<MeshVertex> vertices;
-	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;
-
 	void BindTexturesAndSetTextureUniforms(Shader shader) {
 		unsigned int albedoNum = 0;
 		unsigned int specularNum = 0;
@@ -88,5 +66,11 @@ private:
 		}
 		glActiveTexture(GL_TEXTURE0);
 	}
+private:
+	unsigned int vao, vbo, ebo;
+
+	std::vector<MeshVertex> vertices;
+	std::vector<unsigned int> indices;
+	std::vector<Texture> textures;	
 };
 

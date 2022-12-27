@@ -25,16 +25,8 @@ public:
 
 		AddMeshes(scene->mRootNode, scene);
 	}
-	void Draw(Shader shader, Camera camera) {
-		shader.SetMat4("modelMatrix", GetModelMatrix());
-		shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
-		shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
-
-		shader.Use();
-		for (unsigned int i = 0; i < meshes.size(); i++) {
-			meshes[i].ModelDraw(shader);
-		}
-		Shader::Unuse();
+	std::vector<Mesh> GetMeshes() {
+		return meshes;
 	}
 private:
 	std::string directoryPath;

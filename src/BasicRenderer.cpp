@@ -44,7 +44,18 @@ int main()
         camera.ProcessInput(window, deltaTime);
 
         backpack.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
-        backpack.Draw(shader, camera);
+
+        shader.SetMat4("modelMatrix", backpack.GetModelMatrix());
+        shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
+        shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
+
+        shader.Use();
+        std::vector<Mesh> backpackMeshes = backpack.GetMeshes();
+        for (unsigned int i = 0; i < backpackMeshes.size(); i++) {
+            backpackMeshes[i].BindTexturesAndSetTextureUniforms(shader);
+            backpackMeshes[i].Draw();
+        }
+        Shader::Unuse();
     }
 
     glfwTerminate();
