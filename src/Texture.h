@@ -1,14 +1,10 @@
 #pragma once
 #include <string>
+#include <assimp/scene.h>
 
-
-enum TextureType{
-	DIFFUSE,
-	SPECULAR
-};
 
 struct Texture {
 	unsigned int id;
-	unsigned int type;
+	aiTextureType type;
 	std::string path;
 };

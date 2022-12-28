@@ -1,3 +1,3 @@
 #pragma once
-#define WINDOWHEIGHT 600.0f
-#define WINDOWWIDTH 800.0f
+#define WINDOWHEIGHT 1080.0f
+#define WINDOWWIDTH 1920.0f

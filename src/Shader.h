@@ -34,6 +34,10 @@ public:
 		int location = glGetUniformLocation(shaderProgram, name.c_str());
 		glProgramUniformMatrix4fv(shaderProgram, location, 1, GL_FALSE, glm::value_ptr(value));
 	}
+	void SetVec3(std::string name, glm::vec3 value) {
+		int location = glGetUniformLocation(shaderProgram, name.c_str());
+		glProgramUniform3fv(shaderProgram, location, 1, glm::value_ptr(value));
+	}
 	void SetInt(std::string name, int value) {
 		int location = glGetUniformLocation(shaderProgram, name.c_str());
 		glProgramUniform1i(shaderProgram, location, value);

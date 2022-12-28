@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include <string>
 #include "Camera.h"
+#include <assimp/types.h>
 
 class Mesh : public GameObject{
 public:
@@ -44,22 +45,22 @@ public:
 		glBindVertexArray(0);
 	}
 	void BindTexturesAndSetTextureUniforms(Shader shader) {
-		unsigned int albedoNum = 0;
+		unsigned int diffuseNum = 0;
 		unsigned int specularNum = 0;
 
 		for (unsigned int i = 0; i < textures.size(); i++) {
 			std::string uniformName;
 
-			if (textures[i].type == DIFFUSE) {
-				uniformName = "texture_diffuse" + std::to_string(albedoNum);
-				albedoNum++;
+			if (textures[i].type == aiTextureType_DIFFUSE) {
+				uniformName = "texture_diffuse" + std::to_string(diffuseNum);
+				diffuseNum++;
 			}
-			else if (textures[i].type == SPECULAR) {
+			else if (textures[i].type == aiTextureType_SPECULAR) {
 				uniformName = "texture_specular" + std::to_string(specularNum);
 				specularNum++;
 			}
 			else continue;
-
+			
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, textures[i].id);
 			shader.SetInt(uniformName, i);
@@ -69,8 +70,9 @@ public:
 private:
 	unsigned int vao, vbo, ebo;
 
+	std::vector<Texture> textures;
 	std::vector<MeshVertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;	
+
 };
 

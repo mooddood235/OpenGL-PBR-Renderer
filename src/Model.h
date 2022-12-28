@@ -84,24 +84,25 @@ private:
 			material->GetTexture(type, i, &textureFileName);
 
 			std::string texturePath = directoryPath + "/" + textureFileName.C_Str();
-			
 			Texture texture;
 
 			bool already_loaded = false;
 
 			for (unsigned int j = 0; j < loaded_textures.size(); j++) {
-				if (loaded_textures[j].path == texturePath) texture = loaded_textures[j];
-				already_loaded = true;
+				if (loaded_textures[j].path.compare(texturePath) == 0) {
+					texture = loaded_textures[j];
+					already_loaded = true;
+					break;
+				}
 			}
 			if (!already_loaded) {
-				texture.id = LoadTexture(texturePath);
-				if (type == aiTextureType_DIFFUSE) texture.type = DIFFUSE;
-				else texture.type = SPECULAR;
-				texture.path = texturePath;
-
+				texture = {
+					LoadTexture(texturePath),
+					type,
+					texturePath
+				};
 				loaded_textures.push_back(texture);
 			}
-		
 			textures.push_back(texture);
 		}
 		return textures;
@@ -128,6 +129,7 @@ private:
 			stbi_image_free(data);
 			exit(-1);
 		}
+
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);

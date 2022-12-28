@@ -20,6 +20,7 @@ int main()
     
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_FRAMEBUFFER_SRGB);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     Shader shader = Shader("src/Shaders/Default.vert", "src/Shaders/Default.frag");
@@ -43,11 +44,16 @@ int main()
 
         camera.ProcessInput(window, deltaTime);
 
-        backpack.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
+        //backpack.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
 
         shader.SetMat4("modelMatrix", backpack.GetModelMatrix());
         shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
         shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
+
+        shader.SetVec3("lightPos", glm::vec3(-1.0f, 5.0, 3.0f) * 20.0f);
+
+        glm::vec3 viewPos = glm::vec3(camera.GetModelMatrix()[3]);
+        shader.SetVec3("viewPos", viewPos);
 
         shader.Use();
         std::vector<Mesh> backpackMeshes = backpack.GetMeshes();
@@ -68,7 +74,7 @@ GLFWwindow* InitGLFW() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "BasicRenderer", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "BasicRenderer", NULL, NULL);
 
     if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
