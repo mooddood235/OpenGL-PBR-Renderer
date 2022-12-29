@@ -97,7 +97,7 @@ private:
 			}
 			if (!already_loaded) {
 				texture = {
-					LoadTexture(texturePath),
+					LoadTexture(texturePath, type),
 					type,
 					texturePath
 				};
@@ -107,7 +107,7 @@ private:
 		}
 		return textures;
 	}
-	unsigned int LoadTexture(std::string path) {
+	unsigned int LoadTexture(std::string path, aiTextureType type) {
 		unsigned int textureID;
 		glGenTextures(1, &textureID);
 
@@ -119,11 +119,23 @@ private:
 			stbi_image_free(data);
 			exit(-1);
 		}
-		GLenum format;
+		GLenum inFormat;
+		GLenum outFormat;
 
-		if (numChannels == 1) format = GL_RED;
-		else if (numChannels == 3) format = GL_RGB;
-		else if (numChannels == 4) format = GL_RGBA;
+		if (numChannels == 1) {
+			inFormat = GL_RED;
+			outFormat = GL_RED;
+		}
+		else if (numChannels == 3) {
+			if (type == aiTextureType_DIFFUSE) inFormat = GL_SRGB;
+			else inFormat = GL_RGB;
+			outFormat = GL_RGB;
+		}
+		else if (numChannels == 4) {
+			if (type == aiTextureType_DIFFUSE) inFormat = GL_SRGB_ALPHA;
+			else inFormat = GL_RGBA;
+			outFormat = GL_RGBA;
+		}
 		else {
 			std::cout << "Texture at path <" << path << "> has unsupported channel format <" << numChannels << ">." << std::endl;
 			stbi_image_free(data);
@@ -131,7 +143,7 @@ private:
 		}
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, inFormat, width, height, 0, outFormat, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

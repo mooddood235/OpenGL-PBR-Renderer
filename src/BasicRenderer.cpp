@@ -20,7 +20,7 @@ int main()
     
     glViewport(0, 0, WINDOWWIDTH, WINDOWHEIGHT);
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_FRAMEBUFFER_SRGB);
+    glEnable(GL_FRAMEBUFFER_SRGB);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     Shader shader = Shader("src/Shaders/Default.vert", "src/Shaders/Default.frag");

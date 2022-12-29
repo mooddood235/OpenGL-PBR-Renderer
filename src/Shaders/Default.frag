@@ -22,13 +22,11 @@ void main()
 {
     vec3 fragNorm = normalize(fragNormal);;
     vec3 lightDir = normalize(lightPos - fragPos);
-
     vec3 viewDir = normalize(viewPos - fragPos);
-
-    vec3 reflectionDir = reflect(-lightDir, fragNorm);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
 
     float diffuseStrength = max(dot(fragNorm, lightDir), 0.0);
-    float specularStrength = pow(max(dot(viewDir, reflectionDir), 0.0), 32);
+    float specularStrength = pow(max(dot(fragNorm, halfwayDir), 0.0), 32);
 
     vec3 diffuse = vec3(texture(texture_diffuse0, fragUV));
     vec3 specular = vec3(texture(texture_specular0, fragUV));
