@@ -7,7 +7,8 @@
 #include "Shader.h"
 #include <string>
 #include "Camera.h"
-#include <assimp/types.h>
+#include <assimp/scene.h>
+#include <iostream>
 
 class Mesh : public GameObject{
 public:
@@ -15,7 +16,56 @@ public:
 		this->vertices = vertices;
 		this->indices = indices;
 		this->textures = textures;
-		
+
+		GenerateGeometry();
+	}
+
+	void Draw() {
+		glBindVertexArray(vao);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
+
+	void BindTexturesAndSetTextureUniforms(Shader shader) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		unsigned int diffuseIndex = 0;
+		unsigned int specularIndex = 0;
+
+		std::string array_name;
+		unsigned int index;
+
+		for (unsigned int i = 0; i < textures.size(); i++) {
+			if (textures[i].type == aiTextureType_DIFFUSE) {
+				array_name = "texture_diffuse";
+				index = diffuseIndex;
+				diffuseIndex++;
+			}
+			else if (textures[i].type == aiTextureType_SPECULAR) {
+				array_name = "texture_specular";
+				index = specularIndex;
+				specularIndex++;
+			}
+			else continue;
+
+			glActiveTexture(GL_TEXTURE1 + i);
+			glBindTexture(GL_TEXTURE_2D, textures[i].id);
+			shader.SetInt(array_name + "[" + std::to_string(index) + "]", i + 1);
+		}
+		if (diffuseIndex == 0) shader.SetInt("texture_diffuse[0]", 0);
+		if (specularIndex == 0) shader.SetInt("texture_specular[0]", 0);
+
+	}
+private:
+	unsigned int vao, vbo, ebo;
+
+	std::vector<Texture> textures;
+
+	std::vector<MeshVertex> vertices;
+	std::vector<unsigned int> indices;
+
+	void GenerateGeometry() {
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
 		glGenBuffers(1, &ebo);
@@ -30,7 +80,7 @@ public:
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
-		
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
@@ -38,41 +88,5 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
-	
-	void Draw() {
-		glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-	}
-	void BindTexturesAndSetTextureUniforms(Shader shader) {
-		unsigned int diffuseNum = 0;
-		unsigned int specularNum = 0;
-
-		for (unsigned int i = 0; i < textures.size(); i++) {
-			std::string uniformName;
-
-			if (textures[i].type == aiTextureType_DIFFUSE) {
-				uniformName = "texture_diffuse" + std::to_string(diffuseNum);
-				diffuseNum++;
-			}
-			else if (textures[i].type == aiTextureType_SPECULAR) {
-				uniformName = "texture_specular" + std::to_string(specularNum);
-				specularNum++;
-			}
-			else continue;
-			
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
-			shader.SetInt(uniformName, i);
-		}
-		glActiveTexture(GL_TEXTURE0);
-	}
-private:
-	unsigned int vao, vbo, ebo;
-
-	std::vector<Texture> textures;
-	std::vector<MeshVertex> vertices;
-	std::vector<unsigned int> indices;
-
 };
 

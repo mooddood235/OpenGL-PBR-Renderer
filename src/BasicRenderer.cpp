@@ -25,9 +25,12 @@ int main()
 
     Shader shader = Shader("src/Shaders/Default.vert", "src/Shaders/Default.frag");
     Model backpack = Model("Models/Backpack/backpack.obj");
+    Model brickPlane = Model("Models/BrickPlane/BrickPlane.obj");
     Camera camera = Camera();
 
     camera.Translate(glm::vec3(0, 0, 8));
+    brickPlane.Translate(glm::vec3(0, -2, 0));
+    brickPlane.Scale(glm::vec3(5));
 
     float lastTime = 0;
     
@@ -44,9 +47,10 @@ int main()
 
         camera.ProcessInput(window, deltaTime);
 
-        //backpack.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
+        backpack.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
 
         shader.SetMat4("modelMatrix", backpack.GetModelMatrix());
+        shader.SetMat3("normalMatrix", glm::transpose(glm::inverse(backpack.GetModelMatrix())));
         shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
         shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
 
@@ -61,6 +65,16 @@ int main()
             backpackMeshes[i].BindTexturesAndSetTextureUniforms(shader);
             backpackMeshes[i].Draw();
         }
+
+        shader.SetMat4("modelMatrix", brickPlane.GetModelMatrix());
+        shader.SetMat3("normalMatrix", glm::transpose(glm::inverse(brickPlane.GetModelMatrix())));
+        std::vector<Mesh> brickPlaneMeshes = brickPlane.GetMeshes();
+        for (unsigned int i = 0; i < brickPlaneMeshes.size(); i++) {
+            brickPlaneMeshes[i].BindTexturesAndSetTextureUniforms(shader);
+            brickPlaneMeshes[i].Draw();
+        }
+
+
         Shader::Unuse();
     }
 

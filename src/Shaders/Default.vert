@@ -8,6 +8,7 @@ out vec3 fragNormal;
 out vec2 fragUV;
 
 uniform mat4 modelMatrix;
+uniform mat3 normalMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
@@ -16,5 +17,5 @@ void main()
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(inPos, 1);
     fragPos = vec3(modelMatrix * vec4(inPos, 1));
     fragUV = uv;
-    fragNormal = inNormal;
+    fragNormal = normalMatrix * inNormal;
 }
