@@ -32,6 +32,7 @@ public:
 
 		unsigned int diffuseIndex = 0;
 		unsigned int specularIndex = 0;
+		unsigned int normalIndex = 0;
 
 		std::string array_name;
 		unsigned int index;
@@ -47,6 +48,11 @@ public:
 				index = specularIndex;
 				specularIndex++;
 			}
+			else if (textures[i].type == aiTextureType_HEIGHT) {
+				array_name = "texture_normal";
+				index = normalIndex;
+				normalIndex++;
+			}
 			else continue;
 
 			glActiveTexture(GL_TEXTURE1 + i);
@@ -55,6 +61,7 @@ public:
 		}
 		if (diffuseIndex == 0) shader.SetInt("texture_diffuse[0]", 0);
 		if (specularIndex == 0) shader.SetInt("texture_specular[0]", 0);
+		if (normalIndex == 0) shader.SetInt("texture_normal[0]", 0);
 
 	}
 private:
@@ -76,10 +83,14 @@ private:
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(MeshVertex), &vertices[0], GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), (void*)0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), (void*)offsetof(MeshVertex, normal));
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), (void*)offsetof(MeshVertex, uv));
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), (void*)offsetof(MeshVertex, tangent));
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), (void*)offsetof(MeshVertex, biTangent));
+		glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), (void*)offsetof(MeshVertex, uv));
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(4);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);

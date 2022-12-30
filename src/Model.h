@@ -16,7 +16,7 @@ public:
 		directoryPath = modelPath.substr(0, modelPath.find_last_of('/'));
 
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate);
+		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -48,13 +48,17 @@ private:
 		std::vector<Texture> textures;
 
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-			MeshVertex meshVertex = {
+			glm::vec2 uv;
+			if (mesh->mTextureCoords[0]) uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			else uv = glm::vec2(0);
+
+			MeshVertex meshVertex(
 				glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z),
-				glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z)
-			};
-			if (mesh->mTextureCoords[0])
-				meshVertex.uv = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-			else meshVertex.uv = glm::vec2(0);
+				glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z),
+				glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z),
+				glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z),
+				uv
+			);
 			
 			vertices.push_back(meshVertex);
 		}
@@ -69,9 +73,11 @@ private:
 
 			std::vector<Texture> diffuseTextures = LoadTextures(material, aiTextureType_DIFFUSE);
 			std::vector<Texture> specularTextures = LoadTextures(material, aiTextureType_SPECULAR);
+			std::vector<Texture> normalTextures = LoadTextures(material, aiTextureType_HEIGHT);
 
 			textures.insert(textures.end(), diffuseTextures.begin(), diffuseTextures.end());
 			textures.insert(textures.end(), specularTextures.begin(), specularTextures.end());
+			textures.insert(textures.end(), normalTextures.begin(), normalTextures.end());
 		}
 
 		return Mesh(vertices, indices, textures);
@@ -96,11 +102,7 @@ private:
 				}
 			}
 			if (!already_loaded) {
-				texture = {
-					LoadTexture(texturePath, type),
-					type,
-					texturePath
-				};
+				texture = Texture(LoadTexture(texturePath, type), type, texturePath);
 				loaded_textures.push_back(texture);
 			}
 			textures.push_back(texture);
