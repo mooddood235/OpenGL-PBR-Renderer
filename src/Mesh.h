@@ -17,6 +17,7 @@ public:
 		this->indices = indices;
 		this->textures = textures;
 
+		SortTextures();
 		GenerateGeometry();
 	}
 
@@ -26,51 +27,52 @@ public:
 		glBindVertexArray(0);
 	}
 
+	void SortTextures() {
+		for (unsigned int i = 0; i < textures.size(); i++) {
+			if (textures[i].type == aiTextureType_DIFFUSE) diffuseTextures.push_back(i);
+			else if (textures[i].type == aiTextureType_SPECULAR) specularTextures.push_back(i);
+			else if (textures[i].type == aiTextureType_NORMALS) normalTextures.push_back(i);
+			else if (textures[i].type == aiTextureType_METALNESS) metallicTextures.push_back(i);
+			else if (textures[i].type == aiTextureType_SHININESS) roughnessTextures.push_back(i);
+			else if (textures[i].type == aiTextureType_AMBIENT_OCCLUSION) aoTextures.push_back(i);
+		}
+	}
+
 	void BindTexturesAndSetTextureUniforms(Shader shader) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		unsigned int diffuseIndex = 0;
-		unsigned int specularIndex = 0;
-		unsigned int normalIndex = 0;
+		unsigned int textureID = 1;
 
-		std::string array_name;
-		unsigned int index;
-
-		for (unsigned int i = 0; i < textures.size(); i++) {
-			if (textures[i].type == aiTextureType_DIFFUSE) {
-				array_name = "texture_diffuse";
-				index = diffuseIndex;
-				diffuseIndex++;
+		auto helper = [&](std::vector<unsigned int> textureArray, std::string textureName) {
+			if (textureArray.size() == 0) shader.SetInt(textureName, 0);
+			else {
+				glActiveTexture(GL_TEXTURE0 + textureID);
+				glBindTexture(GL_TEXTURE_2D, textures[textureArray[0]].id);
+				shader.SetInt(textureName, textureID);
+				textureID++;
 			}
-			else if (textures[i].type == aiTextureType_SPECULAR) {
-				array_name = "texture_specular";
-				index = specularIndex;
-				specularIndex++;
-			}
-			else if (textures[i].type == aiTextureType_HEIGHT) {
-				array_name = "texture_normal";
-				index = normalIndex;
-				normalIndex++;
-			}
-			else continue;
-
-			glActiveTexture(GL_TEXTURE1 + i);
-			glBindTexture(GL_TEXTURE_2D, textures[i].id);
-			shader.SetInt(array_name + "[" + std::to_string(index) + "]", i + 1);
-		}
-		if (diffuseIndex == 0) shader.SetInt("texture_diffuse[0]", 0);
-		if (specularIndex == 0) shader.SetInt("texture_specular[0]", 0);
-		if (normalIndex == 0) shader.SetInt("texture_normal[0]", 0);
-
+		};
+		helper(diffuseTextures, "albedoTexture");
+		helper(specularTextures, "specularTextures");
+		helper(normalTextures, "normalTexture");
+		helper(metallicTextures, "metallicTexture");
+		helper(roughnessTextures, "roughnessTexture");
+		helper(aoTextures, "aoTexture");
 	}
 private:
 	unsigned int vao, vbo, ebo;
 
-	std::vector<Texture> textures;
-
 	std::vector<MeshVertex> vertices;
 	std::vector<unsigned int> indices;
+
+	std::vector<Texture> textures;
+	std::vector<unsigned int> diffuseTextures;
+	std::vector<unsigned int> specularTextures;
+	std::vector<unsigned int> normalTextures;
+	std::vector<unsigned int> metallicTextures;
+	std::vector<unsigned int> roughnessTextures;
+	std::vector<unsigned int> aoTextures;
 
 	void GenerateGeometry() {
 		glGenVertexArrays(1, &vao);

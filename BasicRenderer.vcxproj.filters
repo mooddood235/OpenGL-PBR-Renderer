@@ -75,5 +75,7 @@
   <ItemGroup>
     <None Include="src\Shaders\Default.vert" />
     <None Include="src\Shaders\Default.frag" />
+    <None Include="src\Shaders\PBR.vert" />
+    <None Include="src\Shaders\PBR.frag" />
   </ItemGroup>
 </Project>

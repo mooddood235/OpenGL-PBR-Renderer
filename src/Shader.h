@@ -41,6 +41,10 @@ public:
 		int location = glGetUniformLocation(shaderProgram, name.c_str());
 		glProgramUniform3fv(shaderProgram, location, 1, glm::value_ptr(value));
 	}
+	void SetFloat(std::string name, float value) {
+		int location = glGetUniformLocation(shaderProgram, name.c_str());
+		glProgramUniform1f(shaderProgram, location, value);
+	}
 	void SetInt(std::string name, int value) {
 		int location = glGetUniformLocation(shaderProgram, name.c_str());
 		glProgramUniform1i(shaderProgram, location, value);

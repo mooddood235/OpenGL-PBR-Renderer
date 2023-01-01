@@ -2,7 +2,6 @@
 #include <string>
 #include <assimp/scene.h>
 
-
 struct Texture {
 	unsigned int id;
 	aiTextureType type;
@@ -16,6 +15,6 @@ struct Texture {
 	Texture() {
 		id = 0;
 		type = aiTextureType_NONE;
-		path = "";
+		path = "texture_default";
 	}
 };

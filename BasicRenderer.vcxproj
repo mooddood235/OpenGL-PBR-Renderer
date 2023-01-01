@@ -169,8 +169,10 @@
     <ClInclude Include="src\WindowSettings.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\Shaders\PBR.frag" />
     <None Include="src\Shaders\Default.frag" />
     <None Include="src\Shaders\Default.vert" />
+    <None Include="src\Shaders\PBR.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

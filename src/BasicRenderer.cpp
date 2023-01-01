@@ -23,14 +23,12 @@ int main()
     glEnable(GL_FRAMEBUFFER_SRGB);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-    Shader shader = Shader("src/Shaders/Default.vert", "src/Shaders/Default.frag");
-    Model backpack = Model("Models/Backpack/backpack.obj");
-    Model brickPlane = Model("Models/BrickPlane/BrickPlane.obj");
+    Shader meshShader = Shader("src/Shaders/PBR.vert", "src/Shaders/PBR.frag");
+    Model sphere = Model("Models/Sphere/Sphere.fbx");
     Camera camera = Camera();
 
     camera.Translate(glm::vec3(0, 0, 8));
-    brickPlane.Translate(glm::vec3(0, -2, 0));
-    brickPlane.Scale(glm::vec3(5));
+    sphere.RotateGlobal(90, glm::vec3(1, 0, 0));
 
     float lastTime = 0;
     
@@ -40,41 +38,32 @@ int main()
         glfwPollEvents();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
- 
+    
         float currentTime = glfwGetTime();
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
         camera.ProcessInput(window, deltaTime);
 
-        backpack.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
+        meshShader.SetMat4("modelMatrix", sphere.GetModelMatrix());
+        meshShader.SetMat3("normalMatrix", glm::transpose(glm::inverse(sphere.GetModelMatrix())));
+        meshShader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
+        meshShader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
 
-        shader.SetMat4("modelMatrix", backpack.GetModelMatrix());
-        shader.SetMat3("normalMatrix", glm::transpose(glm::inverse(backpack.GetModelMatrix())));
-        shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
-        shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
+        meshShader.SetVec3("viewPos", glm::vec3(camera.GetModelMatrix()[3]));
 
-        shader.SetVec3("lightPos", glm::vec3(-1.0f, 5.0, 3.0f) * 20.0f);
+        meshShader.SetVec3("lightPositions[0]", glm::vec3(2));
+        meshShader.SetVec3("lightColors[0]", glm::vec3(1));
+        meshShader.SetVec3("lightPositions[1]", glm::vec3(0, 2, 0));
+        meshShader.SetVec3("lightColors[1]", glm::vec3(1));
 
-        glm::vec3 viewPos = glm::vec3(camera.GetModelMatrix()[3]);
-        shader.SetVec3("viewPos", viewPos);
 
-        shader.Use();
-        std::vector<Mesh> backpackMeshes = backpack.GetMeshes();
-        for (unsigned int i = 0; i < backpackMeshes.size(); i++) {
-            backpackMeshes[i].BindTexturesAndSetTextureUniforms(shader);
-            backpackMeshes[i].Draw();
+        meshShader.Use();
+        std::vector<Mesh> sphereMeshes = sphere.GetMeshes();
+        for (unsigned int i = 0; i < sphereMeshes.size(); i++) {
+            sphereMeshes[i].BindTexturesAndSetTextureUniforms(meshShader);
+            sphereMeshes[i].Draw();
         }
-
-        shader.SetMat4("modelMatrix", brickPlane.GetModelMatrix());
-        shader.SetMat3("normalMatrix", glm::transpose(glm::inverse(brickPlane.GetModelMatrix())));
-        std::vector<Mesh> brickPlaneMeshes = brickPlane.GetMeshes();
-        for (unsigned int i = 0; i < brickPlaneMeshes.size(); i++) {
-            brickPlaneMeshes[i].BindTexturesAndSetTextureUniforms(shader);
-            brickPlaneMeshes[i].Draw();
-        }
-
-
         Shader::Unuse();
     }
 

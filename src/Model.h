@@ -73,11 +73,17 @@ private:
 
 			std::vector<Texture> diffuseTextures = LoadTextures(material, aiTextureType_DIFFUSE);
 			std::vector<Texture> specularTextures = LoadTextures(material, aiTextureType_SPECULAR);
-			std::vector<Texture> normalTextures = LoadTextures(material, aiTextureType_HEIGHT);
+			std::vector<Texture> normalTextures = LoadTextures(material, aiTextureType_NORMALS);
+			std::vector<Texture> metallicTextures = LoadTextures(material, aiTextureType_METALNESS);
+			std::vector<Texture> roughnessTextures = LoadTextures(material, aiTextureType_SHININESS);
+			std::vector<Texture> aoTextures = LoadTextures(material, aiTextureType_AMBIENT_OCCLUSION);
 
 			textures.insert(textures.end(), diffuseTextures.begin(), diffuseTextures.end());
 			textures.insert(textures.end(), specularTextures.begin(), specularTextures.end());
 			textures.insert(textures.end(), normalTextures.begin(), normalTextures.end());
+			textures.insert(textures.end(), metallicTextures.begin(), metallicTextures.end());
+			textures.insert(textures.end(), roughnessTextures.begin(), roughnessTextures.end());
+			textures.insert(textures.end(), aoTextures.begin(), aoTextures.end());
 		}
 
 		return Mesh(vertices, indices, textures);
