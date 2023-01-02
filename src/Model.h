@@ -28,6 +28,26 @@ public:
 	std::vector<Mesh> GetMeshes() {
 		return meshes;
 	}
+	void Draw(Shader shader, Camera camera) {
+		shader.SetMat4("modelMatrix", GetModelMatrix());
+		shader.SetMat3("normalMatrix", glm::transpose(glm::inverse(GetModelMatrix())));
+
+		shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
+		shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
+		shader.SetVec3("viewPos", glm::vec3(camera.GetModelMatrix()[3]));
+
+		shader.SetVec3("lightPositions[0]", glm::vec3(2));
+		shader.SetVec3("lightColors[0]", glm::vec3(1));
+		shader.SetVec3("lightPositions[1]", glm::vec3(0, 2, 0));
+		shader.SetVec3("lightColors[1]", glm::vec3(1));
+
+		shader.Use();
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			meshes[i].BindTexturesAndSetTextureUniforms(shader);
+			meshes[i].Draw();
+		}
+		Shader::Unuse();
+	}
 private:
 	std::string directoryPath;
 	std::vector<Mesh> meshes = std::vector<Mesh>();

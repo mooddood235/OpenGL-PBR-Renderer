@@ -8,6 +8,7 @@
 #include "Model.h"
 #include "Camera.h"
 #include "WindowSettings.h"
+#include "HDR.h"
 
 GLFWwindow* InitGLFW();
 void InitGLAD();
@@ -44,27 +45,8 @@ int main()
         lastTime = currentTime;
 
         camera.ProcessInput(window, deltaTime);
-
-        meshShader.SetMat4("modelMatrix", sphere.GetModelMatrix());
-        meshShader.SetMat3("normalMatrix", glm::transpose(glm::inverse(sphere.GetModelMatrix())));
-        meshShader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
-        meshShader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
-
-        meshShader.SetVec3("viewPos", glm::vec3(camera.GetModelMatrix()[3]));
-
-        meshShader.SetVec3("lightPositions[0]", glm::vec3(2));
-        meshShader.SetVec3("lightColors[0]", glm::vec3(1));
-        meshShader.SetVec3("lightPositions[1]", glm::vec3(0, 2, 0));
-        meshShader.SetVec3("lightColors[1]", glm::vec3(1));
-
-
-        meshShader.Use();
-        std::vector<Mesh> sphereMeshes = sphere.GetMeshes();
-        for (unsigned int i = 0; i < sphereMeshes.size(); i++) {
-            sphereMeshes[i].BindTexturesAndSetTextureUniforms(meshShader);
-            sphereMeshes[i].Draw();
-        }
-        Shader::Unuse();
+        
+        sphere.Draw(meshShader, camera);
     }
 
     glfwTerminate();

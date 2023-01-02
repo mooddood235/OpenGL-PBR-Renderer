@@ -158,8 +158,9 @@
     <ClInclude Include="Includes\khrplatform.h" />
     <ClInclude Include="Includes\stb_image\stb_image.h" />
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\CubeMap.h" />
     <ClInclude Include="src\GameObject.h" />
-    <ClInclude Include="src\Light.h" />
+    <ClInclude Include="src\HDR.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\MeshVertex.h" />
     <ClInclude Include="src\Model.h" />

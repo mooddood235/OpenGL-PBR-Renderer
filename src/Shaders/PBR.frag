@@ -13,7 +13,7 @@ uniform vec3 viewPos;
 uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
 
-uniform sampler2D albedoTexture;
+uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D metallicTexture;
 uniform sampler2D roughnessTexture;
@@ -26,7 +26,7 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 
 void main()
 {
-    vec3 albedo = vec3(texture(albedoTexture, fragUV));
+    vec3 albedo = vec3(texture(diffuseTexture, fragUV));
     float metallic = texture(metallicTexture, fragUV).x;
     float roughness = texture(roughnessTexture, fragUV).x;
     float ao = texture(aoTexture, fragUV).x;
@@ -64,7 +64,7 @@ void main()
         Lo += (kD * albedo / PI + specular) * radiance * NdotL;
     }
 
-    vec3 ambient = vec3(0.03) * albedo * ao;
+    vec3 ambient = vec3(0.03) * albedo * 1;//ao;
     vec3 finalColor = ambient + Lo;
     
     fragColor = vec4(finalColor, 1.0);

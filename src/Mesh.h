@@ -53,7 +53,7 @@ public:
 				textureID++;
 			}
 		};
-		helper(diffuseTextures, "albedoTexture");
+		helper(diffuseTextures, "diffuseTexture");
 		helper(specularTextures, "specularTextures");
 		helper(normalTextures, "normalTexture");
 		helper(metallicTextures, "metallicTexture");
@@ -102,4 +102,3 @@ private:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 };
-
