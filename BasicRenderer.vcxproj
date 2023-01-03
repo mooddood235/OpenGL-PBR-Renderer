@@ -161,19 +161,30 @@
     <ClInclude Include="src\CubeMap.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\HDR.h" />
+    <ClInclude Include="src\LightGroup.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\MeshVertex.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\SkyBox.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Triangle.h" />
     <ClInclude Include="src\WindowSettings.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\Shaders\BRDFIntegration.frag" />
+    <None Include="src\Shaders\ConvoluteHDR.frag" />
+    <None Include="src\Shaders\equirectangularToCubemap.frag" />
+    <None Include="src\Shaders\equirectangularToCubemap.vert" />
+    <None Include="src\Shaders\NDC.vert" />
     <None Include="src\Shaders\PBR.frag" />
     <None Include="src\Shaders\Default.frag" />
     <None Include="src\Shaders\Default.vert" />
     <None Include="src\Shaders\PBR.vert" />
+    <None Include="src\Shaders\PBRSimple.frag" />
+    <None Include="src\Shaders\PreFilter.frag" />
+    <None Include="src\Shaders\SkyBox.frag" />
+    <None Include="src\Shaders\SkyBox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

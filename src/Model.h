@@ -9,6 +9,8 @@
 #include "Texture.h"
 #include "Camera.h"
 #include <stb_image/stb_image.h>
+#include "CubeMap.h"
+#include "LightGroup.h"
 
 class Model : public GameObject{
 public:
@@ -28,7 +30,25 @@ public:
 	std::vector<Mesh> GetMeshes() {
 		return meshes;
 	}
-	void Draw(Shader shader, Camera camera) {
+	void SetShader(Shader shader) {
+		this->shader = shader;
+	}
+	void SetCamera(Camera camera) {
+		this->camera = camera;
+	}
+	void SetIrradianceMap(CubeMap irradianceMap) {
+		this->irradianceMap = irradianceMap;
+	}
+	void SetPreFilterMap(CubeMap preFilterMap) {
+		this->preFilterMap = preFilterMap;
+	}
+	void SetBRDFIntegrationMap(Texture BRDFIntegartionMap) {
+		this->BRDFIntegrationMap = BRDFIntegartionMap;
+	}
+	void SetLightGroup(LightGroup lightGroup) {
+		this->lightGroup = lightGroup;
+	}
+	void Draw() {
 		shader.SetMat4("modelMatrix", GetModelMatrix());
 		shader.SetMat3("normalMatrix", glm::transpose(glm::inverse(GetModelMatrix())));
 
@@ -36,22 +56,51 @@ public:
 		shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
 		shader.SetVec3("viewPos", glm::vec3(camera.GetModelMatrix()[3]));
 
-		shader.SetVec3("lightPositions[0]", glm::vec3(2));
-		shader.SetVec3("lightColors[0]", glm::vec3(1));
-		shader.SetVec3("lightPositions[1]", glm::vec3(0, 2, 0));
-		shader.SetVec3("lightColors[1]", glm::vec3(1));
+		lightGroup.SetLightUniforms(shader);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap.id);
+		shader.SetInt("irradianceMap", 1);
+
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, preFilterMap.id);
+		shader.SetInt("prefilterMap", 2);
+
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, BRDFIntegrationMap.id);
+		shader.SetInt("brdfLUT", 3);
 
 		shader.Use();
 		for (unsigned int i = 0; i < meshes.size(); i++) {
-			meshes[i].BindTexturesAndSetTextureUniforms(shader);
+			meshes[i].BindTexturesAndSetTextureUniforms(shader, 4);
 			meshes[i].Draw();
 		}
 		Shader::Unuse();
+	}
+	void Draw(glm::vec3 albedo, float roughness, float metallic, float ao) {
+		shader.SetVec3("diffuse", albedo);
+		shader.SetFloat("roughness", roughness);
+		shader.SetFloat("metallic", metallic);
+		shader.SetFloat("ao", ao);
+
+		Draw();
+	}
+	void JustDraw() {
+		for (unsigned int i = 0; i < meshes.size(); i++) {
+			meshes[i].Draw();
+		}
 	}
 private:
 	std::string directoryPath;
 	std::vector<Mesh> meshes = std::vector<Mesh>();
 	std::vector<Texture> loaded_textures;
+
+	Shader shader;
+	Camera camera;
+	CubeMap irradianceMap;
+	CubeMap preFilterMap;
+	Texture BRDFIntegrationMap;
+	LightGroup lightGroup;
 
 	void AddMeshes(aiNode *node, const aiScene* scene) {
 		for (unsigned int i = 0; i < node->mNumMeshes; i++) {

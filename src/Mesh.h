@@ -38,19 +38,19 @@ public:
 		}
 	}
 
-	void BindTexturesAndSetTextureUniforms(Shader shader) {
+	void BindTexturesAndSetTextureUniforms(Shader shader, unsigned int startingIndex) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		unsigned int textureID = 1;
+		unsigned int textureIndex = startingIndex;
 
 		auto helper = [&](std::vector<unsigned int> textureArray, std::string textureName) {
 			if (textureArray.size() == 0) shader.SetInt(textureName, 0);
 			else {
-				glActiveTexture(GL_TEXTURE0 + textureID);
+				glActiveTexture(GL_TEXTURE0 + textureIndex);
 				glBindTexture(GL_TEXTURE_2D, textures[textureArray[0]].id);
-				shader.SetInt(textureName, textureID);
-				textureID++;
+				shader.SetInt(textureName, textureIndex);
+				textureIndex++;
 			}
 		};
 		helper(diffuseTextures, "diffuseTexture");

@@ -74,11 +74,26 @@
     <ClInclude Include="src\CubeMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SkyBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LightGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\Default.vert" />
     <None Include="src\Shaders\Default.frag" />
     <None Include="src\Shaders\PBR.vert" />
     <None Include="src\Shaders\PBR.frag" />
+    <None Include="src\Shaders\equirectangularToCubemap.vert" />
+    <None Include="src\Shaders\equirectangularToCubemap.frag" />
+    <None Include="src\Shaders\SkyBox.vert" />
+    <None Include="src\Shaders\SkyBox.frag" />
+    <None Include="src\Shaders\ConvoluteHDR.frag" />
+    <None Include="src\Shaders\PBRSimple.frag" />
+    <None Include="src\Shaders\PreFilter.frag" />
+    <None Include="src\Shaders\BRDFIntegration.frag" />
+    <None Include="src\Shaders\NDC.vert" />
   </ItemGroup>
 </Project>
