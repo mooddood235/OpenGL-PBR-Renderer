@@ -14,11 +14,14 @@
 
 class Model : public GameObject{
 public:
-	Model(std::string modelPath) : GameObject() {
+	Model(std::string modelPath, bool flipUVS = false) : GameObject() {
 		directoryPath = modelPath.substr(0, modelPath.find_last_of('/'));
 
+		unsigned int flags = aiProcess_Triangulate | aiProcess_CalcTangentSpace;
+		if (flipUVS) flags |= aiProcess_FlipUVs;
+
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile(modelPath, flags);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -48,6 +51,9 @@ public:
 	void SetLightGroup(LightGroup lightGroup) {
 		this->lightGroup = lightGroup;
 	}
+	void SetHDRBrightness(float brightness) {
+		HDRBrightness = brightness;
+	}
 	void Draw() {
 		shader.SetMat4("modelMatrix", GetModelMatrix());
 		shader.SetMat3("normalMatrix", glm::transpose(glm::inverse(GetModelMatrix())));
@@ -55,6 +61,8 @@ public:
 		shader.SetMat4("viewMatrix", glm::inverse(camera.GetModelMatrix()));
 		shader.SetMat4("projectionMatrix", camera.GetProjectionMatrix());
 		shader.SetVec3("viewPos", glm::vec3(camera.GetModelMatrix()[3]));
+
+		shader.SetFloat("HDRBrightness", HDRBrightness);
 
 		lightGroup.SetLightUniforms(shader);
 
@@ -101,6 +109,7 @@ private:
 	CubeMap preFilterMap;
 	Texture BRDFIntegrationMap;
 	LightGroup lightGroup;
+	float HDRBrightness;
 
 	void AddMeshes(aiNode *node, const aiScene* scene) {
 		for (unsigned int i = 0; i < node->mNumMeshes; i++) {
