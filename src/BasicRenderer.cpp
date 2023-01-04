@@ -28,7 +28,8 @@ int main()
     glDepthFunc(GL_LEQUAL);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-    Shader meshShader = Shader("src/Shaders/PBR.vert", "src/Shaders/PBR.frag");
+    Shader PBRShader = Shader("src/Shaders/PBR.vert", "src/Shaders/PBR.frag");
+    Shader PBRSimpleShader = Shader("src/Shaders/PBR.vert", "src/Shaders/PBRSimple.frag");
     Shader equirectangularToCubeMapShader = Shader("src/Shaders/equirectangularToCubemap.vert", "src/Shaders/equirectangularToCubemap.frag");
     Shader convoluteHDRShader = Shader("src/Shaders/equirectangularToCubemap.vert", "src/Shaders/ConvoluteHDR.frag");
     Shader preFilterShader = Shader("src/Shaders/equirectangularToCubemap.vert", "src/Shaders/PreFilter.frag");
@@ -49,9 +50,10 @@ int main()
 
     camera.Translate(glm::vec3(0, 0, 8));
     sphere.RotateGlobal(90, glm::vec3(1, 0, 0));
+    cube.Translate(glm::vec3(2, 0, 0));
     float lastTime = 0;
     
-    sphere.SetShader(meshShader);
+    sphere.SetShader(PBRShader);
     sphere.SetLightGroup(lightGroup);
     sphere.SetIrradianceMap(houseHDR.irradianceMap);
     sphere.SetPreFilterMap(houseHDR.preFilterMap);
