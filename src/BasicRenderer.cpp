@@ -40,8 +40,14 @@ int main()
     Model cube = Model("Models/Cube/Cube.fbx");
     Model sphere = Model("Models/Sphere/Sphere.fbx");
 
-    LightGroup lightGroup = LightGroup(std::vector<glm::vec3>{glm::vec3(5),
-        glm::vec3(0, 5, 0)}, std::vector<glm::vec3>{glm::vec3(100), glm::vec3(100)});
+    std::vector<glm::vec3> lightPositions = {
+        glm::vec3(0, 0, 10), glm::vec3(0, 20, 0), glm::vec3(0, 0, -10)
+    };
+    std::vector<glm::vec3> lightColors = {
+        glm::vec3(100), glm::vec3(100), glm::vec3(100)
+    };
+
+    LightGroup lightGroup = LightGroup(lightPositions, lightColors);
 
     Camera camera = Camera();
 
@@ -53,7 +59,7 @@ int main()
     cube.Translate(glm::vec3(2, 0, 0));
     float lastTime = 0;
     
-    sphere.SetShader(PBRShader);
+    sphere.SetShader(PBRSimpleShader);
     sphere.SetLightGroup(lightGroup);
     sphere.SetIrradianceMap(houseHDR.irradianceMap);
     sphere.SetPreFilterMap(houseHDR.preFilterMap);
@@ -75,7 +81,21 @@ int main()
         skyBox.Draw(skyBoxShader, cube, camera);
 
         sphere.SetCamera(camera);
-        sphere.Draw();
+        
+        for (int x = -2; x <= 2; x++) {
+            for (int y = -2; y <= 2; y++) {
+                sphere.SetPosition(glm::vec3(x * 2.5, y * 2.5, 0));
+
+                float r = (glm::sin(currentTime) + 1) / 2;
+                float g = (glm::cos(currentTime) + 1) / 2;
+                float b = (y + 2.0) / 4;
+
+                float roughness = (x + 2.0) / 4;
+                float metallic = (y + 2.0) / 4;
+               
+                sphere.Draw(glm::vec3(r, g, b), roughness, metallic, 0);
+            }
+        }
     }
 
     glfwTerminate();

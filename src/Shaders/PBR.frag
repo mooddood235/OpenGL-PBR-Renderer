@@ -10,8 +10,8 @@ out vec4 fragColor;
 
 uniform vec3 viewPos;
 
-uniform vec3 lightPositions[4];
-uniform vec3 lightColors[4];
+uniform vec3 lightPositions[6];
+uniform vec3 lightColors[6];
 
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalTexture;

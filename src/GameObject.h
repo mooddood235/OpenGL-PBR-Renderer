@@ -7,6 +7,9 @@ public:
 	void Translate(glm::vec3 translation) {
 		translationMatrix = glm::translate(translationMatrix, translation);
 	}
+	void SetPosition(glm::vec3 position) {
+		translationMatrix = glm::translate(glm::mat4(1), position);
+	}
 	void Scale(glm::vec3 scale) {
 		scaleMatrix = glm::scale(scaleMatrix, scale);
 	}
