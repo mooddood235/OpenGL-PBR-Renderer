@@ -39,6 +39,7 @@ int main()
     Model cube = Model("Models/Cube/Cube.fbx");
     Model sphere = Model("Models/Sphere/Sphere.fbx");
     Model blunderbuss = Model("Models/Blunderbuss/Blunderbuss.fbx", true);
+    Model cameraModel = Model("Models/Camera/Camera.fbx", true);
 
     std::vector<glm::vec3> lightPositions = {
         glm::vec3(0, 0, 10), glm::vec3(0, 20, 0), glm::vec3(0, 0, -10)
@@ -58,7 +59,8 @@ int main()
     sphere.RotateGlobal(90, glm::vec3(1, 0, 0));
     blunderbuss.Scale(glm::vec3(0.05));
     blunderbuss.RotateGlobal(90, glm::vec3(0, 1, 0));
-
+    cameraModel.RotateGlobal(-90, glm::vec3(1, 0, 0));
+    cameraModel.Scale(glm::vec3(23));
 
     float lastTime = 0;
     
@@ -76,9 +78,15 @@ int main()
     blunderbuss.SetBRDFIntegrationMap(houseHDR.BRDFIntegrationMap);
     blunderbuss.SetHDRBrightness(2);
 
-    unsigned int scene = 0;
-    bool mousePressed = false;
+    cameraModel.SetShader(PBRShader);
+    cameraModel.SetLightGroup(lightGroup);
+    cameraModel.SetIrradianceMap(houseHDR.irradianceMap);
+    cameraModel.SetPreFilterMap(houseHDR.preFilterMap);
+    cameraModel.SetBRDFIntegrationMap(houseHDR.BRDFIntegrationMap);
+    cameraModel.SetHDRBrightness(2);
 
+    unsigned int scene = 0;
+    bool mouse1Pressed = false;
 
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
@@ -86,11 +94,12 @@ int main()
         glfwPollEvents();
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
-        if (!mousePressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
-            scene = (scene + 1) % 2;
-            mousePressed = true;
+        if (!mouse1Pressed && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+            scene = (scene + 1) % 3;
+            mouse1Pressed = true;
         }
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE) mousePressed = false;
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE) mouse1Pressed = false;
+      
         
         float currentTime = glfwGetTime();
         float deltaTime = currentTime - lastTime;
@@ -101,6 +110,7 @@ int main()
         skyBox.Draw(skyBoxShader, cube, camera);
 
         blunderbuss.RotateGlobal(45 * deltaTime, glm::vec3(0, 1, 0));
+        cameraModel.RotateGlobal(30 * deltaTime, glm::vec3(0, 1, 0));
 
         if (scene == 0) {
             sphere.SetCamera(camera);
@@ -124,6 +134,10 @@ int main()
             blunderbuss.SetCamera(camera);
             blunderbuss.Draw();
         }
+        else if (scene == 2) {
+            cameraModel.SetCamera(camera);
+            cameraModel.Draw();
+        }
     }
 
     glfwTerminate();
@@ -136,7 +150,12 @@ GLFWwindow* InitGLFW() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "BasicRenderer", NULL, NULL);
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    
+    WINDOWWIDTH = mode->width;
+    WINDOWHEIGHT = mode->height;
+
+    GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "BasicRenderer", glfwGetPrimaryMonitor(), NULL);
 
     if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
