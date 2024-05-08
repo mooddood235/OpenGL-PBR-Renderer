@@ -1,4 +1,4 @@
-# BasicRenderer
+# OpenGL Renderer
 A basic renderer following Joey de Vries' [OpenGL tutorial](https://learnopengl.com/).
 
 # Features
