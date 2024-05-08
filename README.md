@@ -1,5 +1,5 @@
 # OpenGL-PBR-Renderer
-A basic renderer following Joey de Vries' [OpenGL tutorial](https://learnopengl.com/).
+A PBR renderer following Joey de Vries' [OpenGL tutorial](https://learnopengl.com/).
 
 # Features
 - Physically based rendering (according to the tutorial)
